@@ -1,13 +1,27 @@
 import Config
 
 # Configure your database
-config :content_api, ContentApi.Repo,
-  database: Path.expand("../content_api_dev.db", __DIR__),
-  pool_size: 5,
-  stacktrace: true,
-  show_sensitive_data_on_connection_error: true,
-  journal_mode: :wal,
-  synchronous: :normal
+if System.get_env("DATABASE_ENGINE") == "postgres" do
+  IO.puts "Using postgres database"
+  config :content_api, ContentApi.Repo,
+    username: "postgres",
+    password: "postgres",
+    hostname: "localhost",
+    database: "content_api_dev",
+    stacktrace: true,
+    show_sensitive_data_on_connection_error: true,
+    pool_size: 20
+else
+  IO.puts "Using sqlite database"
+  config :content_api, ContentApi.Repo,
+    database: Path.expand("../content_api_dev.db", __DIR__),
+    pool_size: 5,
+    stacktrace: true,
+    show_sensitive_data_on_connection_error: true,
+    journal_mode: :wal,
+    synchronous: :normal
+end
+
 
 # For development, we disable any cache and enable
 # debugging and code reloading.
